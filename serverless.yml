@@ -1,0 +1,35 @@
+service: mixpanel-proxy
+
+plugins:
+  - serverless-webpack
+  - serverless-prune-plugin
+
+provider:
+  name: aws
+  runtime: nodejs16.x
+  stage: 'production'
+  region: ap-southeast-2
+
+  deploymentBucket:
+    name: serverless-deployment.joegaebel.com
+
+custom:
+  webpack:
+    includeModules: true
+    excludeFiles: ./**/*.spec.ts
+    packager: 'npm'
+
+  stages:
+    - development
+
+  prune:
+    automatic: true
+    number: 5
+
+functions:
+  api:
+    handler: ./src/index.handler
+    events:
+      - http:
+          path: /{proxy+}
+          method: any
